@@ -1,7 +1,7 @@
 import 'server-only';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import type { Role } from '@prisma/client';
 import { authOptions } from '@/lib/auth';
 import type { SessionUser } from '@/types/next-auth';
@@ -100,4 +100,14 @@ export async function requireStaffPage(allowedRoles?: Role[]): Promise<StaffSess
     redirect('/backoffice');
   }
   return user;
+}
+
+/** requireSchoolAccess for pages: a school-scoped user hitting another school's page gets a 404, not an unhandled error. */
+export function requireSchoolAccessPage(user: StaffSessionUser, schoolId: string): void {
+  try {
+    requireSchoolAccess(user, schoolId);
+  } catch (err) {
+    if (err instanceof ForbiddenError) notFound();
+    throw err;
+  }
 }
