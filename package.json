@@ -13,6 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "ai:reindex": "tsx scripts/reindex-ai.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {
@@ -24,6 +25,7 @@
     "bcryptjs": "^3.0.3",
     "next": "14.2.35",
     "next-auth": "^4.24.15",
+    "openai": "^6.49.0",
     "prisma": "^6.19.3",
     "react": "^18",
     "react-dom": "^18",

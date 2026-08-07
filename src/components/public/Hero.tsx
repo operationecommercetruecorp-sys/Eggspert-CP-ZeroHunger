@@ -2,7 +2,13 @@
 
 import { useLanguage } from '@/lib/i18n/LanguageProvider';
 
-export function Hero({ onOpenChat }: { onOpenChat: () => void }) {
+export function Hero({
+  onOpenChat,
+  onAsk,
+}: {
+  onOpenChat: () => void;
+  onAsk: (question: string) => void;
+}) {
   const { t } = useLanguage();
 
   return (
@@ -26,9 +32,13 @@ export function Hero({ onOpenChat }: { onOpenChat: () => void }) {
         </button>
         <div className="mt-4 flex flex-wrap justify-center gap-2.5">
           {t.chips.map((c) => (
-            <span key={c} className="rounded-pill border border-border bg-white px-3.5 py-1.5 text-[13px] text-ink-body">
+            <button
+              key={c}
+              onClick={() => onAsk(c)}
+              className="rounded-pill border border-border bg-white px-3.5 py-1.5 text-[13px] text-ink-body"
+            >
               {c}
-            </span>
+            </button>
           ))}
         </div>
       </div>

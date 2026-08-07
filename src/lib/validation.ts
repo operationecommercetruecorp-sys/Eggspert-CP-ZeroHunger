@@ -62,6 +62,15 @@ export const waterFeedLogSchema = z.object({
 });
 export type WaterFeedLogInput = z.infer<typeof waterFeedLogSchema>;
 
+export const iotReadingSchema = z.object({
+  deviceId: z.string().min(1, 'กรุณาเลือกอุปกรณ์'),
+  temp: z.number(),
+  humidity: z.number(),
+  water: z.number(),
+  feed: z.number(),
+});
+export type IotReadingInput = z.infer<typeof iotReadingSchema>;
+
 export const newsSchema = z.object({
   schoolId: z.string().min(1).optional(),
   title: z.string().min(1, 'กรุณากรอกหัวข้อข่าว'),

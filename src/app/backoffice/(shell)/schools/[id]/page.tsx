@@ -9,6 +9,7 @@ import { AddWaterFeedLogModal } from '@/components/backoffice/AddWaterFeedLogMod
 import { AddPhotoModal } from '@/components/backoffice/AddPhotoModal';
 import { AddSyllabusModal } from '@/components/backoffice/AddSyllabusModal';
 import { AddNewsModal } from '@/components/backoffice/AddNewsModal';
+import { AddIotReadingModal } from '@/components/backoffice/AddIotReadingModal';
 import { TogglePublishButton } from '@/components/backoffice/TogglePublishButton';
 
 const TABS = ['overview', 'users', 'eggs', 'water', 'iot', 'photos', 'syllabus', 'news'] as const;
@@ -80,7 +81,7 @@ export default async function SchoolDetailPage({
       {tab === 'users' && <UsersTab schoolId={school.id} isManager={isManager} isTeacher={isTeacher} />}
       {tab === 'eggs' && <EggsTab schoolId={school.id} canEdit={canEdit} />}
       {tab === 'water' && <WaterTab schoolId={school.id} canEdit={canEdit} />}
-      {tab === 'iot' && <IotTab schoolId={school.id} />}
+      {tab === 'iot' && <IotTab schoolId={school.id} canEdit={canEdit} />}
       {tab === 'photos' && <PhotosTab schoolId={school.id} canEdit={canEdit} />}
       {tab === 'syllabus' && <SyllabusTab schoolId={school.id} canEdit={canEdit} isStudent={isStudent} />}
       {tab === 'news' && <NewsTab schoolId={school.id} canEdit={canEdit} />}
@@ -230,7 +231,7 @@ async function WaterTab({ schoolId, canEdit }: { schoolId: string; canEdit: bool
   );
 }
 
-async function IotTab({ schoolId }: { schoolId: string }) {
+async function IotTab({ schoolId, canEdit }: { schoolId: string; canEdit: boolean }) {
   const [devices, latestReading] = await Promise.all([
     prisma.iotDevice.findMany({ where: { schoolId } }),
     prisma.iotReading.findFirst({ where: { device: { schoolId } }, orderBy: { recordedAt: 'desc' } }),
@@ -243,7 +244,15 @@ async function IotTab({ schoolId }: { schoolId: string }) {
   ];
   return (
     <div>
-      <div className="mb-3.5 text-sm font-bold text-ink">แดชบอร์ด IoT</div>
+      <div className="mb-3.5 flex items-center justify-between">
+        <div>
+          <div className="text-sm font-bold text-ink">แดชบอร์ด IoT</div>
+          <p className="mt-1 text-xs text-ink-faint">
+            ยังไม่มีอุปกรณ์ IoT เชื่อมต่อจริง — ค่าด้านล่างมาจากการบันทึกด้วยตนเอง
+          </p>
+        </div>
+        {canEdit && <AddIotReadingModal schoolId={schoolId} devices={devices} />}
+      </div>
       <div className="mb-[22px] grid grid-cols-4 gap-3.5">
         {cards.map((c) => (
           <div key={c.k} className="rounded-card-sm bg-primary-dark px-5 py-[18px] text-white">

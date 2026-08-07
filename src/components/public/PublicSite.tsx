@@ -25,12 +25,18 @@ export function PublicSite({
   const [projOpen, setProjOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatQuestion, setChatQuestion] = useState<string | undefined>(undefined);
   const [openSchoolId, setOpenSchoolId] = useState<string | null>(null);
+
+  function askInChat(question: string) {
+    setChatQuestion(question);
+    setChatOpen(true);
+  }
 
   return (
     <div className="relative mx-auto max-w-[1440px] bg-white shadow-[0_0_60px_rgba(0,0,0,.08)]">
       <Header />
-      <Hero onOpenChat={() => setChatOpen(true)} />
+      <Hero onOpenChat={() => setChatOpen(true)} onAsk={askInChat} />
       <AudienceDoors />
       <ProjectSection
         projOpen={projOpen}
@@ -43,7 +49,15 @@ export function PublicSite({
       <Footer />
 
       {formOpen && <ApplyModal onClose={() => setFormOpen(false)} />}
-      {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
+      {chatOpen && (
+        <ChatPanel
+          onClose={() => {
+            setChatOpen(false);
+            setChatQuestion(undefined);
+          }}
+          initialQuestion={chatQuestion}
+        />
+      )}
       {openSchoolId && <SchoolModal schoolId={openSchoolId} onClose={() => setOpenSchoolId(null)} />}
     </div>
   );

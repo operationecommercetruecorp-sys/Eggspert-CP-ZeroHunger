@@ -38,9 +38,33 @@ Stop the local database with `npm run db:stop` (or Ctrl+C the `db:start` process
 
 ## Environment variables
 
-See [`.env.example`](.env.example). `RESEND_API_KEY` and `OPENAI_API_KEY` are only needed once
-Phase 3 (applications email) and Phase 4 (AI assistant) land — the app runs without them until
-then.
+See [`.env.example`](.env.example). Without `RESEND_API_KEY`, application-submitted emails are
+skipped (logged, not fatal). Without `OPENAI_API_KEY`, "ask the Eggspert" tells visitors it's
+still being set up instead of answering — the rest of the app works fine either way.
+
+## AI assistant ("ask the Eggspert")
+
+Retrieval-augmented: `LearningArticle` + `News` rows are embedded automatically on create/update
+(see `src/lib/ai/index-content.ts`, called from the backoffice API routes) and the project
+overview copy is embedded once via a script. `POST /api/ask` embeds the question, does an
+in-memory cosine-similarity search over the `Embedding` table (no pgvector — the dataset is small
+enough that this is fine), and asks the model to answer only from the retrieved chunks, citing
+which ones it used. It never answers from general knowledge.
+
+Once you set `OPENAI_API_KEY`, backfill embeddings for content that existed before the key was
+added:
+
+```bash
+npm run ai:reindex
+```
+
+## IoT
+
+No physical IoT hardware exists yet, so there's no device-authenticated ingestion endpoint.
+Readings are logged by hand from the school's IoT tab in the backoffice (same pattern as the egg/
+water logs) via `POST /api/schools/[id]/iot-readings`, and both the backoffice dashboard and the
+public school insights read the latest real `IotReading` row — no simulated/jittered data anywhere.
+`IotDevice.deviceKey` is already in the schema for when real device auth is worth adding.
 
 ## Architecture notes
 
