@@ -78,7 +78,9 @@ export default async function SchoolDetailPage({
       </div>
 
       {tab === 'overview' && <OverviewTab schoolId={school.id} />}
-      {tab === 'users' && <UsersTab schoolId={school.id} isManager={isManager} isTeacher={isTeacher} />}
+      {tab === 'users' && (
+        <UsersTab schoolId={school.id} isManager={isManager} isTeacher={isTeacher} currentUserId={user.id} />
+      )}
       {tab === 'eggs' && <EggsTab schoolId={school.id} canEdit={canEdit} />}
       {tab === 'water' && <WaterTab schoolId={school.id} canEdit={canEdit} />}
       {tab === 'iot' && <IotTab schoolId={school.id} canEdit={canEdit} />}
@@ -115,7 +117,17 @@ async function OverviewTab({ schoolId }: { schoolId: string }) {
   );
 }
 
-async function UsersTab({ schoolId, isManager, isTeacher }: { schoolId: string; isManager: boolean; isTeacher: boolean }) {
+async function UsersTab({
+  schoolId,
+  isManager,
+  isTeacher,
+  currentUserId,
+}: {
+  schoolId: string;
+  isManager: boolean;
+  isTeacher: boolean;
+  currentUserId: string;
+}) {
   const [teachers, students] = await Promise.all([
     prisma.user.findMany({ where: { schoolId, role: 'teacher' }, orderBy: { createdAt: 'asc' } }),
     prisma.user.findMany({ where: { schoolId, role: 'student' }, orderBy: { createdAt: 'desc' } }),
@@ -147,7 +159,9 @@ async function UsersTab({ schoolId, isManager, isTeacher }: { schoolId: string; 
               <span className="text-[12.5px] text-ink-faint">
                 {u.phone} · {u.email}
               </span>
-              {isManager && <RemoveButton url={`/api/users/${u.id}`} confirmMessage={`ลบบัญชี ${u.nameTh}?`} />}
+              {(isManager || isTeacher) && u.id !== currentUserId && (
+                <RemoveButton url={`/api/users/${u.id}`} confirmMessage={`ลบบัญชี ${u.nameTh}?`} />
+              )}
             </div>
           </div>
         ))}
