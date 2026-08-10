@@ -28,6 +28,10 @@ npm run dev                # http://localhost:3000
 
 Stop the local database with `npm run db:stop` (or Ctrl+C the `db:start` process).
 
+Deploying this somewhere real (hosted Postgres, object storage, Vercel, etc.)? See
+[`DEPLOYMENT.md`](DEPLOYMENT.md) — and note that `npm run db:seed` below is dev-only (hardcoded
+passwords); production uses `npm run create-admin` instead.
+
 ### Seeded demo accounts
 
 | Login | Credential |
@@ -74,7 +78,8 @@ public school insights read the latest real `IotReading` row — no simulated/ji
 - `src/lib/auth.ts` — NextAuth config, two Credentials providers (`staff-credentials`,
   `school-credentials`), JWT session strategy.
 - `src/lib/storage.ts` — upload adapter interface; `local` driver writes to `public/uploads/` for
-  dev, swap `STORAGE_DRIVER` once real object storage exists.
+  dev, `s3` driver (AWS S3 / Supabase Storage / R2 / any S3-compatible store) for production —
+  set `STORAGE_DRIVER=s3` and the `S3_*` env vars (see `.env.example`).
 - `src/middleware.ts` — coarse gate redirecting unauthenticated requests to `/backoffice/*` (except
   `/backoffice/login`) back to the login page; per-screen role checks happen server-side in each
   page/route via `requireRole`/`requireStaffPage`.

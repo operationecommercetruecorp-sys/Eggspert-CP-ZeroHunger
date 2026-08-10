@@ -2,6 +2,9 @@
   "name": "eggspert",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,15 +14,18 @@
     "db:start": "node scripts/db-start.mjs",
     "db:stop": "node scripts/db-stop.mjs",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "ai:reindex": "tsx scripts/reindex-ai.ts",
+    "create-admin": "tsx scripts/create-admin.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1106.0",
     "@hookform/resolvers": "^5.7.1",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
