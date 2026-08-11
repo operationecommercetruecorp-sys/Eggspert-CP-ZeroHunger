@@ -14,7 +14,6 @@ export function ChatPanel({ onClose, initialQuestion }: { onClose: () => void; i
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [notConfigured, setNotConfigured] = useState(false);
   const sentInitial = useRef(false);
 
   async function ask(question: string) {
@@ -30,11 +29,7 @@ export function ChatPanel({ onClose, initialQuestion }: { onClose: () => void; i
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'failed');
-      if (json.configured === false) {
-        setNotConfigured(true);
-      } else {
-        setMessages((m) => [...m, { role: 'assistant', text: json.answer, citations: json.citations }]);
-      }
+      setMessages((m) => [...m, { role: 'assistant', text: json.answer, citations: json.citations }]);
     } catch {
       setMessages((m) => [...m, { role: 'assistant', text: t.chatError }]);
     } finally {
@@ -64,9 +59,7 @@ export function ChatPanel({ onClose, initialQuestion }: { onClose: () => void; i
       </div>
 
       <div className="flex-1 space-y-3.5 overflow-y-auto bg-[#FDFCF8] p-[18px]">
-        {notConfigured ? (
-          <p className="text-sm leading-relaxed text-ink-muted">{t.chatComingSoon}</p>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           <p className="text-sm leading-relaxed text-ink-faint">{t.chatEmptyState}</p>
         ) : (
           messages.map((m, i) =>
@@ -79,7 +72,7 @@ export function ChatPanel({ onClose, initialQuestion }: { onClose: () => void; i
               </div>
             ) : (
               <div key={i} className="max-w-[88%]">
-                <div className="rounded-[14px_14px_14px_4px] border border-border bg-white px-[15px] py-3.5 text-sm leading-relaxed text-ink-body">
+                <div className="whitespace-pre-line rounded-[14px_14px_14px_4px] border border-border bg-white px-[15px] py-3.5 text-sm leading-relaxed text-ink-body">
                   {m.text}
                 </div>
                 {!!m.citations?.length && (
@@ -98,29 +91,27 @@ export function ChatPanel({ onClose, initialQuestion }: { onClose: () => void; i
         {loading && <p className="text-sm text-ink-faint">{t.chatThinking}</p>}
       </div>
 
-      {!notConfigured && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            ask(input);
-          }}
-          className="flex items-center gap-2.5 border-t border-border-soft px-4 py-3.5"
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          ask(input);
+        }}
+        className="flex items-center gap-2.5 border-t border-border-soft px-4 py-3.5"
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="ask the Eggspert"
+          className="flex-1 text-sm text-ink outline-none placeholder:text-ink-fainter"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-primary text-[15px] text-white disabled:opacity-60"
         >
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="ask the Eggspert"
-            className="flex-1 text-sm text-ink outline-none placeholder:text-ink-fainter"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-primary text-[15px] text-white disabled:opacity-60"
-          >
-            ↑
-          </button>
-        </form>
-      )}
+          ↑
+        </button>
+      </form>
     </div>
   );
 }

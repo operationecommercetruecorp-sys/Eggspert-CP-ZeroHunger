@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { askEggspert } from '@/lib/ai/ask';
+import { searchLearningCenter } from '@/lib/search/learningCenterSearch';
 
 const bodySchema = z.object({ question: z.string().min(1).max(500) });
 
@@ -12,10 +12,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await askEggspert(parsed.data.question);
-    return NextResponse.json(result);
+    const result = await searchLearningCenter(parsed.data.question);
+    return NextResponse.json({ configured: true, ...result });
   } catch (err) {
-    console.error('askEggspert failed:', err);
+    console.error('searchLearningCenter failed:', err);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
