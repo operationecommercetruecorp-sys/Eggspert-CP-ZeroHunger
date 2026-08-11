@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 // Functional placeholder for Phase 1 verification — Phase 2 replaces the layout/copy
 // with the exact design from Backoffice.dc.html.
@@ -62,6 +63,9 @@ export default function BackofficeLoginPage() {
         >
           {loading ? 'Signing in…' : 'Log in'}
         </button>
+        <Link href="/backoffice/forgot-password" className="mt-4 block text-center text-sm text-ink-muted">
+          Forgot password?
+        </Link>
       </form>
     </main>
   );

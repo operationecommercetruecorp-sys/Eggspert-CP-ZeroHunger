@@ -2,10 +2,14 @@
 
 import { useLanguage } from '@/lib/i18n/LanguageProvider';
 
-// The prototype used uploaded character illustrations here (design-tool asset refs we don't
-// have access to). Using a placeholder swatch in the same style as the backoffice's photo/doc
-// placeholders until real artwork is supplied, rather than fabricating stock imagery.
-function DoorArt() {
+// Configurable from backoffice Settings (SiteImage 'teacher'/'student' keys). Falls back to a
+// placeholder swatch — matching the backoffice's photo/doc placeholder style — until an image
+// is uploaded, rather than fabricating stock imagery.
+function DoorArt({ imageUrl, alt }: { imageUrl: string | null; alt: string }) {
+  if (imageUrl) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={imageUrl} alt={alt} className="h-[140px] w-[140px] flex-none rounded-card-sm border border-border object-cover" />;
+  }
   return (
     <div
       className="h-[140px] w-[140px] flex-none rounded-card-sm border border-border"
@@ -14,13 +18,19 @@ function DoorArt() {
   );
 }
 
-export function AudienceDoors() {
+export function AudienceDoors({
+  teacherImageUrl,
+  studentImageUrl,
+}: {
+  teacherImageUrl: string | null;
+  studentImageUrl: string | null;
+}) {
   const { t } = useLanguage();
 
   return (
     <div className="grid grid-cols-2 border-b border-border-soft bg-white">
       <div className="flex items-center gap-5 border-r border-border-soft p-10">
-        <DoorArt />
+        <DoorArt imageUrl={teacherImageUrl} alt={t.doorTeachTitle} />
         <div>
           <div className="text-[19px] font-bold text-ink">{t.doorTeachTitle}</div>
           <p className="my-1.5 max-w-[372px] text-sm leading-relaxed text-ink-muted">{t.doorTeachSub}</p>
@@ -28,7 +38,7 @@ export function AudienceDoors() {
         </div>
       </div>
       <div className="flex items-center gap-5 p-10">
-        <DoorArt />
+        <DoorArt imageUrl={studentImageUrl} alt={t.doorStudTitle} />
         <div>
           <div className="text-[19px] font-bold text-ink">{t.doorStudTitle}</div>
           <p className="my-1.5 max-w-[372px] text-sm leading-relaxed text-ink-muted">{t.doorStudSub}</p>

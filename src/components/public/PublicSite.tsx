@@ -17,10 +17,12 @@ export function PublicSite({
   projectResult,
   schools,
   articles,
+  siteImages,
 }: {
   projectResult: ProjectResultData | null;
   schools: SchoolCardData[];
   articles: ArticleData[];
+  siteImages: { teacher: string | null; student: string | null; project: string | null };
 }) {
   const [projOpen, setProjOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -37,11 +39,12 @@ export function PublicSite({
     <div className="relative mx-auto max-w-[1440px] bg-white shadow-[0_0_60px_rgba(0,0,0,.08)]">
       <Header />
       <Hero onOpenChat={() => setChatOpen(true)} onAsk={askInChat} />
-      <AudienceDoors />
+      <AudienceDoors teacherImageUrl={siteImages.teacher} studentImageUrl={siteImages.student} />
       <ProjectSection
         projOpen={projOpen}
         onToggleProj={() => setProjOpen((v) => !v)}
         onOpenForm={() => setFormOpen(true)}
+        imageUrl={siteImages.project}
       />
       <ImpactStats result={projectResult} />
       <FindSchool schools={schools} onView={setOpenSchoolId} />

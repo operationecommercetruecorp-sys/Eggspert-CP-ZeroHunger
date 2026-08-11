@@ -6,10 +6,12 @@ export function ProjectSection({
   projOpen,
   onToggleProj,
   onOpenForm,
+  imageUrl,
 }: {
   projOpen: boolean;
   onToggleProj: () => void;
   onOpenForm: () => void;
+  imageUrl: string | null;
 }) {
   const { t } = useLanguage();
 
@@ -44,10 +46,15 @@ export function ProjectSection({
           </div>
         </div>
         <div className="aspect-[4/3] overflow-hidden rounded-card border border-border">
-          <div
-            className="h-full w-full"
-            style={{ background: 'repeating-linear-gradient(135deg,#F7F1E3 0 12px,#EFE6D2 12px 24px)' }}
-          />
+          {imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imageUrl} alt={t.projTitle} className="h-full w-full object-cover" />
+          ) : (
+            <div
+              className="h-full w-full"
+              style={{ background: 'repeating-linear-gradient(135deg,#F7F1E3 0 12px,#EFE6D2 12px 24px)' }}
+            />
+          )}
         </div>
       </div>
     </div>

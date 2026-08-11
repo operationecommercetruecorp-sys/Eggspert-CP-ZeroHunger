@@ -22,18 +22,19 @@ enum ApplicationStatus {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  role          Role
-  email         String?  @unique
-  passwordHash  String
-  nameTh        String
-  nameEn        String
-  phone         String?
-  photoUrl      String?
-  isMainContact Boolean  @default(false)
-  schoolId      String?
-  school        School?  @relation(fields: [schoolId], references: [id])
-  createdAt     DateTime @default(now())
+  id              String    @id @default(cuid())
+  role            Role
+  email           String?   @unique
+  passwordHash    String
+  nameTh          String
+  nameEn          String
+  phone           String?
+  photoUrl        String?
+  isMainContact   Boolean   @default(false)
+  schoolId        String?
+  school          School?   @relation(fields: [schoolId], references: [id])
+  createdAt       DateTime  @default(now())
+  passwordResetAt DateTime?
 
   @@index([schoolId])
   @@index([role])
@@ -167,19 +168,27 @@ model News {
 }
 
 model LearningArticle {
-  id        String    @id @default(cuid())
+  id        String     @id @default(cuid())
   tag       String
   title     String
   body      String
   imageUrl  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   embedding Embedding?
 }
 
 model NotificationEmail {
   id    String @id @default(cuid())
   email String @unique
+}
+
+// Configurable homepage imagery (teacher/student door illustrations, project photo) —
+// key is one of 'teacher' | 'student' | 'project', enforced in the API route, not here.
+model SiteImage {
+  key       String   @id
+  url       String
+  updatedAt DateTime @updatedAt
 }
 
 // Retrieval index for the "ask the Eggspert" assistant (Phase 4).

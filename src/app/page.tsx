@@ -7,11 +7,13 @@ import { PublicSite } from '@/components/public/PublicSite';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const [latestResult, schools, articles] = await Promise.all([
+  const [latestResult, schools, articles, siteImages] = await Promise.all([
     prisma.projectResult.findFirst({ orderBy: { updateDate: 'desc' } }),
     prisma.school.findMany({ orderBy: { name: 'asc' } }),
     prisma.learningArticle.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.siteImage.findMany(),
   ]);
+  const siteImageByKey = Object.fromEntries(siteImages.map((i) => [i.key, i.url]));
 
   const schoolCards = await Promise.all(
     schools.map(async (s) => {
@@ -45,6 +47,11 @@ export default async function Home() {
         }
         schools={schoolCards}
         articles={articles.map((a) => ({ id: a.id, tag: a.tag, title: a.title, body: a.body }))}
+        siteImages={{
+          teacher: siteImageByKey.teacher ?? null,
+          student: siteImageByKey.student ?? null,
+          project: siteImageByKey.project ?? null,
+        }}
       />
     </PublicProviders>
   );
