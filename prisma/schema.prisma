@@ -168,14 +168,30 @@ model News {
 }
 
 model LearningArticle {
-  id        String     @id @default(cuid())
-  tag       String
-  title     String
-  body      String
-  imageUrl  String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  embedding Embedding?
+  id          String                      @id @default(cuid())
+  tag         String
+  title       String
+  body        String
+  imageUrl    String?
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
+  embedding   Embedding?
+  attachments LearningArticleAttachment[]
+}
+
+// Downloadable material attached to a Learning Center article — either an uploaded file
+// (doc/xlsx/csv/html, via the storage adapter) or an external link (e.g. Google Docs/Sheets).
+model LearningArticleAttachment {
+  id        String          @id @default(cuid())
+  articleId String
+  article   LearningArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  kind      String
+  label     String
+  url       String
+  fileType  String?
+  createdAt DateTime        @default(now())
+
+  @@index([articleId])
 }
 
 model NotificationEmail {

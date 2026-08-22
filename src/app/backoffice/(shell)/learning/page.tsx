@@ -4,7 +4,10 @@ import { LearningArticleModal } from '@/components/backoffice/LearningArticleMod
 
 export default async function LearningPage() {
   await requireStaffPage(['developer', 'admin', 'cp']);
-  const articles = await prisma.learningArticle.findMany({ orderBy: { createdAt: 'desc' } });
+  const articles = await prisma.learningArticle.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { attachments: { orderBy: { createdAt: 'asc' } } },
+  });
 
   return (
     <div>
@@ -34,7 +37,7 @@ export default async function LearningPage() {
               <div className="my-1.5 text-[15px] font-bold text-ink">{k.title}</div>
               <p className="mb-2.5 text-[12.5px] leading-snug text-ink-muted">{k.body.slice(0, 110)}</p>
               <LearningArticleModal
-                article={{ id: k.id, tag: k.tag, title: k.title, body: k.body }}
+                article={{ id: k.id, tag: k.tag, title: k.title, body: k.body, attachments: k.attachments }}
                 triggerLabel="แก้ไข"
                 triggerClassName="text-[12.5px] font-bold text-primary"
               />

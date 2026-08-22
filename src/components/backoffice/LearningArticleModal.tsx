@@ -6,13 +6,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createLearningArticleSchema, type CreateLearningArticleInput } from '@/lib/validation';
 import { Modal, FormField, ModalActions, inputClass } from './Modal';
+import { ArticleAttachments, type AttachmentData } from './ArticleAttachments';
 
 export function LearningArticleModal({
   article,
   triggerLabel,
   triggerClassName,
 }: {
-  article?: { id: string; tag: string; title: string; body: string };
+  article?: { id: string; tag: string; title: string; body: string; attachments?: AttachmentData[] };
   triggerLabel: string;
   triggerClassName: string;
 }) {
@@ -64,6 +65,7 @@ export function LearningArticleModal({
             </FormField>
             <ModalActions onCancel={close} submitting={isSubmitting} />
           </form>
+          {article && <ArticleAttachments articleId={article.id} attachments={article.attachments ?? []} />}
         </Modal>
       )}
     </>

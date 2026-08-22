@@ -1,6 +1,7 @@
 // Starts a self-contained local Postgres for development (no Docker/Homebrew required).
 // Binary + data live entirely under .pgdata/ in the repo (gitignored).
 import EmbeddedPostgres from 'embedded-postgres';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const databaseDir = path.join(process.cwd(), '.pgdata');
@@ -15,7 +16,12 @@ const pg = new EmbeddedPostgres({
 });
 
 async function main() {
-  await pg.initialise();
+  // initialise() runs initdb, which refuses to touch a non-empty directory — only call it
+  // on a fresh .pgdata. An existing cluster (persistent: true) just needs start().
+  const alreadyInitialised = existsSync(path.join(databaseDir, 'PG_VERSION'));
+  if (!alreadyInitialised) {
+    await pg.initialise();
+  }
   await pg.start();
   try {
     await pg.createDatabase('eggspert');

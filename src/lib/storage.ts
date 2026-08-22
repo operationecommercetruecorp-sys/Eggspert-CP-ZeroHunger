@@ -95,6 +95,9 @@ function contentTypeFor(ext: string): string {
     '.pdf': 'application/pdf',
     '.doc': 'application/msword',
     '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.csv': 'text/csv',
+    '.html': 'text/html',
   };
   return map[ext.toLowerCase()] ?? 'application/octet-stream';
 }

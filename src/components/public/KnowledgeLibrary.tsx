@@ -2,11 +2,20 @@
 
 import { useLanguage } from '@/lib/i18n/LanguageProvider';
 
+export interface ArticleAttachmentData {
+  id: string;
+  kind: string;
+  label: string;
+  url: string;
+  fileType: string | null;
+}
+
 export interface ArticleData {
   id: string;
   tag: string;
   title: string;
   body: string;
+  attachments: ArticleAttachmentData[];
 }
 
 export function KnowledgeLibrary({ articles }: { articles: ArticleData[] }) {
@@ -30,6 +39,21 @@ export function KnowledgeLibrary({ articles }: { articles: ArticleData[] }) {
                 <div className="text-[11px] font-bold uppercase tracking-[.1em] text-success">{k.tag}</div>
                 <div className="my-1.5 text-balance text-[17px] font-bold text-ink">{k.title}</div>
                 <p className="text-[13px] leading-relaxed text-ink-muted">{k.body.slice(0, 140)}</p>
+                {k.attachments.length > 0 && (
+                  <div className="mt-3 flex flex-col gap-1.5 border-t border-border-soft pt-3">
+                    {k.attachments.map((a) => (
+                      <a
+                        key={a.id}
+                        href={a.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="truncate text-[12.5px] font-semibold text-primary"
+                      >
+                        {a.kind === 'link' ? '🔗' : '📄'} {a.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}

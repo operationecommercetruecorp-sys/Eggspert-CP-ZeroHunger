@@ -10,7 +10,10 @@ export default async function Home() {
   const [latestResult, schools, articles, siteImages] = await Promise.all([
     prisma.projectResult.findFirst({ orderBy: { updateDate: 'desc' } }),
     prisma.school.findMany({ orderBy: { name: 'asc' } }),
-    prisma.learningArticle.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.learningArticle.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { attachments: { orderBy: { createdAt: 'asc' } } },
+    }),
     prisma.siteImage.findMany(),
   ]);
   const siteImageByKey = Object.fromEntries(siteImages.map((i) => [i.key, i.url]));
@@ -46,7 +49,19 @@ export default async function Home() {
             : null
         }
         schools={schoolCards}
-        articles={articles.map((a) => ({ id: a.id, tag: a.tag, title: a.title, body: a.body }))}
+        articles={articles.map((a) => ({
+          id: a.id,
+          tag: a.tag,
+          title: a.title,
+          body: a.body,
+          attachments: a.attachments.map((att) => ({
+            id: att.id,
+            kind: att.kind,
+            label: att.label,
+            url: att.url,
+            fileType: att.fileType,
+          })),
+        }))}
         siteImages={{
           teacher: siteImageByKey.teacher ?? null,
           student: siteImageByKey.student ?? null,
