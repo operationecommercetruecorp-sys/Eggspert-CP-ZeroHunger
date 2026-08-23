@@ -90,12 +90,12 @@ export function ArticleAttachments({ articleId, attachments }: { articleId: stri
         disabled={busy}
         className="rounded-btn border-[1.5px] border-primary px-3.5 py-2 text-[12px] font-bold text-primary disabled:opacity-60"
       >
-        + อัปโหลดไฟล์ (doc, xlsx, csv, html)
+        + อัปโหลดไฟล์ (doc, pdf, xlsx, pptx, csv, html)
       </button>
       <input
         ref={fileInput}
         type="file"
-        accept=".doc,.docx,.xlsx,.csv,.html"
+        accept=".doc,.docx,.pdf,.xlsx,.pptx,.csv,.html"
         className="hidden"
         onChange={onFileChange}
       />

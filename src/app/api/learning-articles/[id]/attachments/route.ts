@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { apiHandler, getSessionUser, requireRole } from '@/lib/rbac';
 import { storage } from '@/lib/storage';
 
-const ALLOWED_EXTENSIONS = new Set(['.doc', '.docx', '.xlsx', '.csv', '.html']);
+const ALLOWED_EXTENSIONS = new Set(['.doc', '.docx', '.pdf', '.xlsx', '.pptx', '.csv', '.html']);
 
 export const POST = apiHandler(async (req: Request, { params }: { params: { id: string } }) => {
   requireRole(await getSessionUser(), ['developer', 'admin', 'cp']);
@@ -17,7 +17,7 @@ export const POST = apiHandler(async (req: Request, { params }: { params: { id: 
     const ext = path.extname(file.name).toLowerCase();
     if (!ALLOWED_EXTENSIONS.has(ext)) {
       return NextResponse.json(
-        { error: 'รองรับเฉพาะไฟล์ .doc, .docx, .xlsx, .csv, .html' },
+        { error: 'รองรับเฉพาะไฟล์ .doc, .docx, .pdf, .xlsx, .pptx, .csv, .html' },
         { status: 400 },
       );
     }

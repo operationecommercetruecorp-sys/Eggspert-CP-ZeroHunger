@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createLearningArticleSchema, type CreateLearningArticleInput } from '@/lib/validation';
 import { Modal, FormField, ModalActions, inputClass } from './Modal';
 import { ArticleAttachments, type AttachmentData } from './ArticleAttachments';
+import { PendingAttachmentsPicker, type PendingAttachment } from './PendingAttachmentsPicker';
 
 export function LearningArticleModal({
   article,
@@ -19,6 +20,7 @@ export function LearningArticleModal({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState<PendingAttachment[]>([]);
   const {
     register,
     handleSubmit,
@@ -31,6 +33,7 @@ export function LearningArticleModal({
 
   function close() {
     setOpen(false);
+    setPending([]);
     reset();
   }
 
@@ -42,6 +45,18 @@ export function LearningArticleModal({
       body: JSON.stringify(data),
     });
     if (!res.ok) return;
+
+    if (!article && pending.length > 0) {
+      const { article: created } = await res.json();
+      for (const p of pending) {
+        const form = new FormData();
+        if (p.type === 'file' && p.file) form.append('file', p.file);
+        else if (p.type === 'link' && p.url) form.append('linkUrl', p.url);
+        else continue;
+        await fetch(`/api/learning-articles/${created.id}/attachments`, { method: 'POST', body: form });
+      }
+    }
+
     close();
     router.refresh();
   }
@@ -65,7 +80,11 @@ export function LearningArticleModal({
             </FormField>
             <ModalActions onCancel={close} submitting={isSubmitting} />
           </form>
-          {article && <ArticleAttachments articleId={article.id} attachments={article.attachments ?? []} />}
+          {article ? (
+            <ArticleAttachments articleId={article.id} attachments={article.attachments ?? []} />
+          ) : (
+            <PendingAttachmentsPicker pending={pending} onChange={setPending} />
+          )}
         </Modal>
       )}
     </>

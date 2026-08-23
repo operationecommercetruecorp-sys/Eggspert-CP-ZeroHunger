@@ -96,6 +96,7 @@ function contentTypeFor(ext: string): string {
     '.doc': 'application/msword',
     '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     '.csv': 'text/csv',
     '.html': 'text/html',
   };
