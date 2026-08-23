@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>การเลี้ยงแม่ไก่ | Raising Hens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --shell:#FFF8ED; --shell-dark:#F0E2C6; --shell-line:#E4D2A8;
+    --green:#6FA85C; --green-dark:#33582A; --green-soft:#E4F0DB;
+    --yolk:#FFC53D; --yolk-dark:#E8960C; --brown:#8B5A2B; --ink:#2E2A22;
+    --shadow: 0 10px 30px rgba(46,42,34,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Sarabun',sans-serif;background:var(--shell);color:var(--ink);}
+  [data-lang="th"] .en{display:none;}
+  [data-lang="en"] .th{display:none;}
+
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(255,248,237,0.9);backdrop-filter:blur(6px);border-bottom:2px solid var(--shell-line);}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--green-dark);font-size:1.05rem;}
+  .brand .dot{width:16px;height:20px;background:var(--yolk);border-radius:50% 50% 45% 45% / 60% 60% 40% 40%;display:inline-block;}
+  nav.pages{display:flex;gap:6px;flex-wrap:wrap;}
+  nav.pages a{font-size:.8rem;text-decoration:none;color:var(--green-dark);background:var(--green-soft);padding:6px 12px;border-radius:20px;font-weight:600;border:1.5px solid transparent;}
+  nav.pages a.active{background:var(--green-dark);color:#fff;}
+  nav.pages a:hover{border-color:var(--green-dark);}
+  .langtoggle{display:flex;background:var(--shell-dark);border-radius:20px;padding:3px;gap:2px;}
+  .langtoggle button{border:none;background:transparent;padding:6px 14px;border-radius:16px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;font-size:.82rem;color:var(--brown);}
+  .langtoggle button.active{background:var(--green-dark);color:#fff;}
+
+  header.hero{padding:44px 24px 10px;text-align:center;}
+  .eyebrow{display:inline-block;font-size:.78rem;letter-spacing:.08em;font-weight:700;color:var(--green-dark);background:var(--green-soft);padding:5px 14px;border-radius:20px;margin-bottom:14px;}
+  h1.title{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;color:var(--green-dark);margin:0 0 6px;line-height:1.2;}
+  p.subtitle{font-size:1rem;color:var(--brown);margin:0 0 24px;font-weight:500;}
+
+  section{max-width:1000px;margin:0 auto;padding:36px 24px;}
+  h2.section-title{font-size:1.5rem;font-weight:800;color:var(--green-dark);text-align:center;margin:0 0 8px;}
+  p.section-sub{text-align:center;color:var(--brown);margin:0 0 28px;font-size:.95rem;}
+
+  /* DRAG COOP GAME */
+  .coop-game{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+  .coop-yard{
+    position:relative;width:420px;max-width:100%;height:300px;background:linear-gradient(180deg,#EAF6E4,var(--green-soft));
+    border-radius:22px;border:2px dashed var(--green);box-shadow:var(--shadow);overflow:hidden;
+  }
+  .coop-house{position:absolute;bottom:0;left:0;right:0;height:130px;background:var(--brown);border-radius:0 0 18px 18px;opacity:.15;}
+  .drop-zone{
+    position:absolute;width:64px;height:64px;border-radius:16px;border:3px dashed var(--shell-line);
+    display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--shell-line);
+    background:rgba(255,255,255,0.5);transition:.2s;
+  }
+  .drop-zone.filled{border-style:solid;border-color:var(--green);background:#fff;color:inherit;}
+  .drop-zone.over{border-color:var(--yolk-dark);background:var(--green-soft);}
+  #dz1{top:30px;left:30px;} #dz2{top:30px;right:30px;} #dz3{bottom:100px;left:30px;}
+  #dz4{bottom:100px;right:30px;} #dz5{top:120px;left:170px;}
+
+  .item-tray{display:flex;flex-direction:column;gap:10px;min-width:170px;}
+  .drag-item{
+    background:#fff;border-radius:14px;border:2px solid var(--shell-line);padding:10px 14px;
+    display:flex;align-items:center;gap:10px;cursor:grab;box-shadow:var(--shadow);font-size:.9rem;font-weight:600;
+    user-select:none;
+  }
+  .drag-item.hidden{opacity:.3;pointer-events:none;text-decoration:line-through;}
+  .drag-item .emoji{font-size:1.4rem;}
+  .progress-msg{text-align:center;margin-top:16px;font-weight:700;color:var(--green-dark);min-height:24px;}
+  .reset-coop{display:block;margin:10px auto 0;background:var(--yolk);border:none;color:var(--green-dark);font-weight:700;padding:8px 18px;border-radius:18px;cursor:pointer;font-family:'Sarabun',sans-serif;box-shadow:0 4px 0 var(--yolk-dark);}
+
+  /* ADVANCED COOP PLANNER */
+  .planner-box{background:#fff;border-radius:26px;box-shadow:var(--shadow);border:3px solid var(--shell-line);padding:26px;}
+  .planner-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+  .planner-badge{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;color:#fff;background:var(--brown);padding:4px 12px;border-radius:14px;text-transform:uppercase;}
+  .hen-input-row{display:flex;align-items:center;gap:14px;background:var(--green-soft);border-radius:16px;padding:14px 18px;margin-bottom:18px;flex-wrap:wrap;}
+  .hen-input-row label{font-weight:700;color:var(--green-dark);font-size:.92rem;white-space:nowrap;}
+  .hen-input-row input[type=range]{flex:1;min-width:140px;-webkit-appearance:none;height:8px;border-radius:6px;background:linear-gradient(90deg,#fff,var(--green));outline:none;}
+  .hen-input-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--yolk);border:4px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.25);cursor:grab;}
+  .hen-count-display{font-weight:800;color:var(--green-dark);font-size:1.3rem;min-width:80px;text-align:center;background:#fff;border-radius:12px;padding:4px 10px;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+  .stat-chip{background:var(--shell);border:2px solid var(--shell-line);border-radius:14px;padding:10px 12px;text-align:center;}
+  .stat-chip .stat-icon{font-size:1.3rem;}
+  .stat-chip .stat-val{font-weight:800;color:var(--green-dark);font-size:1.05rem;margin:2px 0;}
+  .stat-chip .stat-label{font-size:.7rem;color:var(--brown);font-weight:600;line-height:1.3;}
+
+  .planner-main{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;}
+  .planner-tools{display:flex;flex-direction:column;gap:8px;min-width:150px;}
+  .tool-btn{
+    display:flex;align-items:center;gap:8px;border:2px solid var(--shell-line);background:#fff;
+    border-radius:14px;padding:9px 12px;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;
+    font-size:.82rem;color:var(--ink);text-align:left;transition:.15s;
+  }
+  .tool-btn .swatch{width:16px;height:16px;border-radius:5px;flex-shrink:0;border:1.5px solid rgba(0,0,0,0.15);}
+  .tool-btn:hover{border-color:var(--green);}
+  .tool-btn.active{border-color:var(--green-dark);background:var(--green-soft);box-shadow:0 0 0 2px var(--green-dark) inset;}
+  .tool-btn.eraser{margin-top:4px;border-style:dashed;}
+
+  .grid-area{flex:1;min-width:280px;}
+  .plan-grid{
+    display:grid;grid-template-columns:repeat(12,1fr);gap:2px;background:var(--shell-dark);
+    border:3px solid var(--brown);border-radius:12px;padding:4px;user-select:none;touch-action:none;
+    max-width:560px;aspect-ratio:12/8;
+  }
+  .plan-cell{
+    background:#fff;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;transition:background .1s;aspect-ratio:1/1;
+  }
+  .plan-cell:hover{background:var(--green-soft);}
+  .plan-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:.75rem;color:var(--brown);}
+  .plan-legend span{display:flex;align-items:center;gap:5px;}
+  .plan-legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+
+  .planner-check{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:20px;}
+  .check-row{
+    display:flex;align-items:center;gap:10px;background:var(--shell);border-radius:12px;padding:10px 12px;
+    border:2px solid var(--shell-line);font-size:.82rem;
+  }
+  .check-row .check-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0;}
+  .check-row .check-text{flex:1;color:var(--ink);}
+  .check-row .check-text b{color:var(--green-dark);}
+  .check-row.ok{border-color:var(--green);background:var(--green-soft);}
+  .check-row.warn{border-color:var(--yolk-dark);background:#FFF4DC;}
+
+  .planner-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+  .planner-btns button{
+    border:none;font-weight:700;padding:9px 18px;border-radius:18px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:.85rem;
+  }
+  .btn-clear{background:#fff;color:var(--brown);border:2px solid var(--shell-line) !important;}
+  .btn-clear:hover{border-color:var(--brown) !important;}
+  @media(max-width:700px){.planner-main{flex-direction:column;}.planner-tools{flex-direction:row;flex-wrap:wrap;width:100%;}.tool-btn{flex:1;min-width:110px;justify-content:center;}}
+
+  /* CARE CARDS accordion */
+  .care-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .care-card{background:#fff;border-radius:18px;box-shadow:var(--shadow);border:2px solid var(--shell-line);overflow:hidden;cursor:pointer;transition:.2s;}
+  .care-card:hover{border-color:var(--green);}
+  .care-head{padding:16px;display:flex;align-items:center;gap:10px;font-weight:700;color:var(--green-dark);}
+  .care-head .emoji{font-size:1.5rem;}
+  .care-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 16px;font-size:.85rem;color:var(--ink);line-height:1.6;}
+  .care-card.open .care-body{max-height:200px;padding:0 16px 16px;}
+  .care-card .chevron{margin-left:auto;transition:.3s;}
+  .care-card.open .chevron{transform:rotate(180deg);}
+
+  /* DAILY ROUTINE */
+  .routine{display:flex;gap:14px;overflow-x:auto;padding:10px 2px 20px;}
+  .routine-step{
+    min-width:170px;background:#fff;border-radius:18px;box-shadow:var(--shadow);border:2px solid var(--shell-line);
+    padding:16px;text-align:center;flex-shrink:0;cursor:pointer;transition:.2s;
+  }
+  .routine-step:hover{transform:translateY(-3px);border-color:var(--yolk-dark);}
+  .routine-step .time{font-size:.72rem;font-weight:700;color:var(--yolk-dark);text-transform:uppercase;letter-spacing:.05em;}
+  .routine-step .emoji{font-size:1.8rem;margin:6px 0;}
+  .routine-step h5{margin:0;font-size:.88rem;color:var(--green-dark);}
+
+  footer{text-align:center;padding:30px 24px 50px;color:var(--brown);font-size:.82rem;}
+  @media(max-width:600px){.topbar{flex-wrap:wrap;gap:10px;}nav.pages{order:3;width:100%;justify-content:center;}.coop-yard{height:280px;}.drop-zone{width:50px;height:50px;font-size:1.2rem;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> Zero Hunger · Eggs for Hope</div>
+  <nav class="pages">
+    <a href="1-egg-knowledge.html">🥚 <span class="th">ไข่</span><span class="en">Egg</span></a>
+    <a href="2-chicken-hen.html">🐔 <span class="th">ไก่</span><span class="en">Chicken</span></a>
+    <a href="3-raising-hens.html" class="active">🏡 <span class="th">การเลี้ยง</span><span class="en">Raising</span></a>
+    <a href="4-nutrition.html">🥗 <span class="th">โภชนาการ</span><span class="en">Nutrition</span></a>
+  </nav>
+  <div class="langtoggle">
+    <button id="btn-th" class="active" onclick="setLang('th')">ไทย</button>
+    <button id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<header class="hero">
+  <span class="eyebrow"><span class="th">บทที่ 3 · การเลี้ยงแม่ไก่</span><span class="en">Chapter 3 · Raising Hens</span></span>
+  <h1 class="title"><span class="th">มาจัดโรงเรือนให้แม่ไก่กันเถอะ</span><span class="en">Let's set up a coop for our hens</span></h1>
+  <p class="subtitle"><span class="th">ลากอุปกรณ์แต่ละชิ้นไปวางในจุดที่ถูกต้องในโรงเรือน</span><span class="en">Drag each item into the right spot in the coop</span></p>
+</header>
+
+<section style="padding-top:6px;">
+  <div class="coop-game">
+    <div class="coop-yard" id="coopYard">
+      <div class="coop-house"></div>
+      <div class="drop-zone" id="dz1" data-need="feeder">?</div>
+      <div class="drop-zone" id="dz2" data-need="water">?</div>
+      <div class="drop-zone" id="dz3" data-need="nest">?</div>
+      <div class="drop-zone" id="dz4" data-need="perch">?</div>
+      <div class="drop-zone" id="dz5" data-need="light">?</div>
+    </div>
+    <div class="item-tray" id="itemTray">
+      <div class="drag-item" draggable="true" data-item="feeder"><span class="emoji">🌾</span><span class="th">รางอาหาร</span><span class="en">Feeder</span></div>
+      <div class="drag-item" draggable="true" data-item="water"><span class="emoji">💧</span><span class="th">รางน้ำ</span><span class="en">Waterer</span></div>
+      <div class="drag-item" draggable="true" data-item="nest"><span class="emoji">🪺</span><span class="th">รังไข่</span><span class="en">Nest box</span></div>
+      <div class="drag-item" draggable="true" data-item="perch"><span class="emoji">🪵</span><span class="th">คอนนอน</span><span class="en">Perch</span></div>
+      <div class="drag-item" draggable="true" data-item="light"><span class="emoji">💡</span><span class="th">แสงสว่าง</span><span class="en">Light source</span></div>
+    </div>
+  </div>
+  <p class="progress-msg" id="progressMsg"><span class="th">ลากอุปกรณ์ 5 ชิ้นให้ครบเพื่อสร้างโรงเรือนที่สมบูรณ์!</span><span class="en">Drag all 5 items to build a complete coop!</span></p>
+  <button class="reset-coop" onclick="resetCoop()"><span class="th">🔄 เริ่มใหม่</span><span class="en">🔄 Start over</span></button>
+</section>
+
+<section>
+  <h2 class="section-title"><span class="th">ออกแบบแผนผังโรงเรือนของคุณ</span><span class="en">Design Your Own Coop Plan</span></h2>
+  <p class="section-sub"><span class="th">เลือกจำนวนแม่ไก่ แล้ววางแผนผังโรงเรือนให้เหมาะสมกับจำนวนนั้น</span><span class="en">Choose how many hens, then lay out a floor plan that fits them properly</span></p>
+
+  <div class="planner-box">
+    <div class="planner-intro">
+      <span class="planner-badge"><span class="th">🎓 กิจกรรมขั้นสูง</span><span class="en">🎓 Advanced Activity</span></span>
+    </div>
+
+    <div class="hen-input-row">
+      <label><span class="th">จำนวนแม่ไก่:</span><span class="en">Number of hens:</span></label>
+      <input type="range" min="2" max="30" value="6" id="henSlider" oninput="updateRecommend(this.value)">
+      <div class="hen-count-display" id="henCountDisplay">6 <span class="th">ตัว</span><span class="en">hens</span></div>
+    </div>
+
+    <div class="stat-grid" id="statGrid"></div>
+
+    <p class="section-sub" style="margin-bottom:14px;text-align:left;"><span class="th">👇 เลือกอุปกรณ์แล้วคลิกหรือลากบนตารางเพื่อวางผังโรงเรือน (ตาราง 1 ช่อง ≈ 0.25 ตร.ม.)</span><span class="en">👇 Pick an item, then click or drag on the grid to place it (1 square ≈ 0.25 m²)</span></p>
+
+    <div class="planner-main">
+      <div class="planner-tools" id="plannerTools"></div>
+      <div class="grid-area">
+        <div class="plan-grid" id="planGrid"></div>
+        <div class="plan-legend" id="planLegend"></div>
+      </div>
+    </div>
+
+    <div class="planner-check" id="plannerCheck"></div>
+
+    <div class="planner-btns">
+      <button class="btn-clear" onclick="clearPlan()"><span class="th">🗑️ ล้างตาราง</span><span class="en">🗑️ Clear grid</span></button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title"><span class="th">สิ่งที่ต้องดูแล</span><span class="en">What Hens Need</span></h2>
+  <p class="section-sub"><span class="th">แตะการ์ดแต่ละใบเพื่อดูรายละเอียด</span><span class="en">Tap each card to see details</span></p>
+  <div class="care-grid" id="careGrid"></div>
+</section>
+
+<section>
+  <h2 class="section-title"><span class="th">กิจวัตรประจำวัน</span><span class="en">Daily Routine</span></h2>
+  <p class="section-sub"><span class="th">งานที่ต้องทำในแต่ละช่วงของวัน</span><span class="en">Tasks throughout the day</span></p>
+  <div class="routine" id="routineWrap"></div>
+</section>
+
+<footer>
+  <span class="th">Zero Hunger – Eggs for Hope · สื่อการเรียนรู้สำหรับนักเรียนและครู</span>
+  <span class="en">Zero Hunger – Eggs for Hope · Learning material for students & teachers</span>
+</footer>
+
+<script>
+function setLang(l){
+  document.documentElement.setAttribute('data-lang',l);
+  document.getElementById('btn-th').classList.toggle('active',l==='th');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+}
+
+/* --- Drag & drop coop --- */
+const items = document.querySelectorAll('.drag-item');
+const zones = document.querySelectorAll('.drop-zone');
+let filled = 0;
+items.forEach(item=>{
+  item.addEventListener('dragstart',e=>{
+    e.dataTransfer.setData('text/plain', item.dataset.item);
+  });
+  // touch support (simple tap-to-place fallback)
+  item.addEventListener('click',()=>{
+    const target = [...zones].find(z=>z.dataset.need===item.dataset.item && !z.classList.contains('filled'));
+    if(target) placeItem(target,item.dataset.item);
+  });
+});
+zones.forEach(zone=>{
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();
+    zone.classList.remove('over');
+    const val = e.dataTransfer.getData('text/plain');
+    if(val === zone.dataset.need && !zone.classList.contains('filled')){
+      placeItem(zone,val);
+    }
+  });
+});
+const emojiMap = {feeder:'🌾',water:'💧',nest:'🪺',perch:'🪵',light:'💡'};
+function placeItem(zone,val){
+  zone.classList.add('filled');
+  zone.textContent = emojiMap[val];
+  const tray = [...items].find(i=>i.dataset.item===val);
+  if(tray) tray.classList.add('hidden');
+  filled++;
+  const msg = document.getElementById('progressMsg');
+  if(filled>=5){
+    msg.innerHTML = `<span class="th">🎉 เก่งมาก! โรงเรือนพร้อมแล้ว แม่ไก่จะมีความสุขมาก</span><span class="en">🎉 Great job! The coop is ready — the hens will be happy</span>`;
+  } else {
+    msg.innerHTML = `<span class="th">ดีมาก! เหลืออีก ${5-filled} ชิ้น</span><span class="en">Nice! ${5-filled} item(s) left</span>`;
+  }
+}
+function resetCoop(){
+  filled=0;
+  zones.forEach(z=>{z.classList.remove('filled');z.textContent='?';});
+  items.forEach(i=>i.classList.remove('hidden'));
+  document.getElementById('progressMsg').innerHTML = `<span class="th">ลากอุปกรณ์ 5 ชิ้นให้ครบเพื่อสร้างโรงเรือนที่สมบูรณ์!</span><span class="en">Drag all 5 items to build a complete coop!</span>`;
+}
+
+/* --- ADVANCED COOP PLANNER --- */
+const CELL_SQM = 0.25; // each grid cell ≈ 0.25 sqm (50cm x 50cm)
+const GRID_COLS = 12, GRID_ROWS = 8;
+
+const planTools = [
+  {id:'floor', th:'พื้นโรงเรือน', en:'Coop floor', icon:'▢', color:'#F0E2C6'},
+  {id:'nest',  th:'รังไข่',      en:'Nest box',   icon:'🪺', color:'#F5DCAF'},
+  {id:'perch', th:'คอนนอน',     en:'Perch',       icon:'🪵', color:'#D9AE6E'},
+  {id:'feeder',th:'รางอาหาร',   en:'Feeder',      icon:'🌾', color:'#FFD873'},
+  {id:'water', th:'รางน้ำ',      en:'Waterer',     icon:'💧', color:'#9FD3E8'},
+  {id:'door',  th:'ประตู/ทางออก',en:'Door / run',  icon:'🚪', color:'#B7D9A0'}
+];
+let activeTool = 'floor';
+const planData = new Array(GRID_COLS*GRID_ROWS).fill(null);
+
+const toolsWrap = document.getElementById('plannerTools');
+planTools.forEach(t=>{
+  const btn = document.createElement('button');
+  btn.className = 'tool-btn'+(t.id==='floor'?' active':'');
+  btn.dataset.tool = t.id;
+  btn.innerHTML = `<span class="swatch" style="background:${t.color}"></span>${t.icon} <span class="th">${t.th}</span><span class="en">${t.en}</span>`;
+  btn.addEventListener('click',()=>{
+    activeTool = t.id;
+    toolsWrap.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+  toolsWrap.appendChild(btn);
+});
+const eraserBtn = document.createElement('button');
+eraserBtn.className = 'tool-btn eraser';
+eraserBtn.innerHTML = `<span class="swatch" style="background:#fff"></span>🧽 <span class="th">ยางลบ</span><span class="en">Eraser</span>`;
+eraserBtn.addEventListener('click',()=>{
+  activeTool = null;
+  toolsWrap.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  eraserBtn.classList.add('active');
+});
+toolsWrap.appendChild(eraserBtn);
+
+const planGrid = document.getElementById('planGrid');
+let painting = false;
+for(let i=0;i<GRID_COLS*GRID_ROWS;i++){
+  const cell = document.createElement('div');
+  cell.className = 'plan-cell';
+  cell.dataset.index = i;
+  cell.addEventListener('mousedown',e=>{painting=true;paintCell(i);e.preventDefault();});
+  cell.addEventListener('mouseenter',()=>{if(painting)paintCell(i);});
+  cell.addEventListener('touchstart',e=>{painting=true;paintCell(i);},{passive:true});
+  planGrid.appendChild(cell);
+}
+planGrid.addEventListener('touchmove',e=>{
+  const t = e.touches[0];
+  const el = document.elementFromPoint(t.clientX,t.clientY);
+  if(el && el.classList.contains('plan-cell')) paintCell(parseInt(el.dataset.index));
+});
+document.addEventListener('mouseup',()=>painting=false);
+document.addEventListener('touchend',()=>painting=false);
+
+function paintCell(i){
+  planData[i] = activeTool;
+  const cell = planGrid.children[i];
+  if(!activeTool){
+    cell.style.background = '#fff';
+    cell.textContent = '';
+  } else {
+    const t = planTools.find(x=>x.id===activeTool);
+    cell.style.background = t.color;
+    cell.textContent = t.id==='floor' ? '' : t.icon;
+  }
+  updatePlannerStats();
+}
+function clearPlan(){
+  for(let i=0;i<planData.length;i++){
+    planData[i]=null;
+    planGrid.children[i].style.background='#fff';
+    planGrid.children[i].textContent='';
+  }
+  updatePlannerStats();
+}
+
+/* Legend */
+const legendWrap = document.getElementById('planLegend');
+planTools.forEach(t=>{
+  const span = document.createElement('span');
+  span.innerHTML = `<span class="sw" style="background:${t.color}"></span><span class="th">${t.th}</span><span class="en">${t.en}</span>`;
+  legendWrap.appendChild(span);
+});
+
+/* Recommendations based on hen count */
+const statGrid = document.getElementById('statGrid');
+function computeRecommend(hens){
+  return {
+    coopArea: hens*0.35,
+    runArea: hens*1.0,
+    nestBoxes: Math.ceil(hens/4),
+    perchLen: (hens*25)/100,
+    feeders: Math.max(1,Math.ceil(hens/15)),
+    waterers: Math.max(1,Math.ceil(hens/15))
+  };
+}
+function updateRecommend(v){
+  const hens = parseInt(v);
+  document.getElementById('henCountDisplay').innerHTML = `${hens} <span class="th">ตัว</span><span class="en">hens</span>`;
+  const r = computeRecommend(hens);
+  statGrid.innerHTML = `
+    <div class="stat-chip"><div class="stat-icon">📐</div><div class="stat-val">${r.coopArea.toFixed(2)} m²</div><div class="stat-label"><span class="th">พื้นที่โรงเรือนแนะนำ</span><span class="en">Recommended coop floor</span></div></div>
+    <div class="stat-chip"><div class="stat-icon">🌳</div><div class="stat-val">${r.runArea.toFixed(1)} m²</div><div class="stat-label"><span class="th">พื้นที่ปล่อยแนะนำ</span><span class="en">Recommended run space</span></div></div>
+    <div class="stat-chip"><div class="stat-icon">🪺</div><div class="stat-val">${r.nestBoxes}</div><div class="stat-label"><span class="th">รังไข่ที่ต้องมี</span><span class="en">Nest boxes needed</span></div></div>
+    <div class="stat-chip"><div class="stat-icon">🪵</div><div class="stat-val">${r.perchLen.toFixed(2)} m</div><div class="stat-label"><span class="th">ความยาวคอนนอน</span><span class="en">Perch length needed</span></div></div>
+    <div class="stat-chip"><div class="stat-icon">🌾</div><div class="stat-val">${r.feeders}</div><div class="stat-label"><span class="th">รางอาหารที่ต้องมี</span><span class="en">Feeders needed</span></div></div>
+    <div class="stat-chip"><div class="stat-icon">💧</div><div class="stat-val">${r.waterers}</div><div class="stat-label"><span class="th">รางน้ำที่ต้องมี</span><span class="en">Waterers needed</span></div></div>
+  `;
+  updatePlannerStats();
+}
+
+function updatePlannerStats(){
+  const hens = parseInt(document.getElementById('henSlider').value);
+  const r = computeRecommend(hens);
+  const count = id => planData.filter(x=>x===id).length;
+  const floorArea = count('floor')*CELL_SQM;
+  const nestCount = count('nest');
+  const perchLen = count('perch')*0.5; // each cell ≈ 0.5m edge
+  const feederCount = count('feeder');
+  const waterCount = count('water');
+  const hasDoor = count('door') > 0;
+
+  const rows = [
+    {ok: floorArea >= r.coopArea, icon: floorArea >= r.coopArea ? '✅' : '⚠️',
+     th:`พื้นที่ที่วาง ${floorArea.toFixed(2)} / ${r.coopArea.toFixed(2)} ตร.ม.`,
+     en:`Floor drawn ${floorArea.toFixed(2)} / ${r.coopArea.toFixed(2)} m²`},
+    {ok: nestCount >= r.nestBoxes, icon: nestCount >= r.nestBoxes ? '✅' : '⚠️',
+     th:`รังไข่ ${nestCount} / ${r.nestBoxes} ช่อง`,
+     en:`Nest boxes ${nestCount} / ${r.nestBoxes}`},
+    {ok: perchLen >= r.perchLen, icon: perchLen >= r.perchLen ? '✅' : '⚠️',
+     th:`คอนนอนยาว ${perchLen.toFixed(1)} / ${r.perchLen.toFixed(2)} ม.`,
+     en:`Perch ${perchLen.toFixed(1)} / ${r.perchLen.toFixed(2)} m`},
+    {ok: feederCount >= r.feeders, icon: feederCount >= r.feeders ? '✅' : '⚠️',
+     th:`รางอาหาร ${feederCount} / ${r.feeders} จุด`,
+     en:`Feeders ${feederCount} / ${r.feeders}`},
+    {ok: waterCount >= r.waterers, icon: waterCount >= r.waterers ? '✅' : '⚠️',
+     th:`รางน้ำ ${waterCount} / ${r.waterers} จุด`,
+     en:`Waterers ${waterCount} / ${r.waterers}`},
+    {ok: hasDoor, icon: hasDoor ? '✅' : '⚠️',
+     th: hasDoor ? 'มีประตู/ทางออกแล้ว' : 'ยังไม่มีประตู/ทางออก',
+     en: hasDoor ? 'Door / run added' : 'No door / run yet'}
+  ];
+  document.getElementById('plannerCheck').innerHTML = rows.map(row=>`
+    <div class="check-row ${row.ok?'ok':'warn'}">
+      <span class="check-icon">${row.icon}</span>
+      <span class="check-text"><span class="th">${row.th}</span><span class="en">${row.en}</span></span>
+    </div>`).join('');
+}
+updateRecommend(6);
+
+/* --- Care cards --- */
+const careItems = [
+  {emoji:'🏠',th:['ที่อยู่อาศัย','โรงเรือนควรมีพื้นที่อย่างน้อย 0.3-0.4 ตร.ม. ต่อตัว อากาศถ่ายเทดี ป้องกันฝนและผู้ล่าได้'],en:['Housing','Allow at least 0.3–0.4 m² per bird, with good airflow and protection from rain and predators.']},
+  {emoji:'🌾',th:['อาหาร','ให้อาหารไก่สูตรสำเร็จตามช่วงวัย พร้อมน้ำสะอาดตลอดเวลา'],en:['Feeding','Provide age-appropriate feed and always have clean water available.']},
+  {emoji:'🩺',th:['สุขภาพ','สังเกตอาการป่วยเป็นประจำ ฉีดวัคซีนตามกำหนด และทำความสะอาดโรงเรือน'],en:['Health care','Check for illness regularly, follow vaccination schedules, and keep the coop clean.']},
+  {emoji:'🪺',th:['การเก็บไข่','เก็บไข่วันละ 1-2 ครั้งเพื่อความสะอาดและป้องกันไข่แตก'],en:['Egg collection','Collect eggs once or twice a day to keep them clean and prevent breakage.']},
+  {emoji:'🌤️',th:['แสงแดดและอากาศ','แม่ไก่ต้องการแสงแดดอย่างน้อย 14 ชม./วัน เพื่อกระตุ้นการออกไข่'],en:['Light & air','Hens need about 14 hours of light a day to keep laying well.']},
+  {emoji:'🧼',th:['ความสะอาด','เปลี่ยนวัสดุรองพื้นสม่ำเสมอ ล้างรางอาหารและน้ำทุกวัน'],en:['Cleanliness','Change bedding regularly and wash feeders and waterers daily.']}
+];
+const careGrid = document.getElementById('careGrid');
+careItems.forEach((c,i)=>{
+  const card = document.createElement('div');
+  card.className='care-card';
+  card.innerHTML = `<div class="care-head"><span class="emoji">${c.emoji}</span><span><span class="th">${c.th[0]}</span><span class="en">${c.en[0]}</span></span><span class="chevron">▾</span></div>
+    <div class="care-body"><span class="th">${c.th[1]}</span><span class="en">${c.en[1]}</span></div>`;
+  card.addEventListener('click',()=>card.classList.toggle('open'));
+  careGrid.appendChild(card);
+});
+
+/* --- Daily routine --- */
+const routine = [
+  {time:'6:00',emoji:'☀️',th:'เปิดโรงเรือน ให้อาหารเช้า',en:'Open coop, morning feed'},
+  {time:'8:00',emoji:'🪺',th:'เก็บไข่รอบแรก',en:'First egg collection'},
+  {time:'12:00',emoji:'💧',th:'เติมน้ำ ตรวจสุขภาพ',en:'Refill water, health check'},
+  {time:'15:00',emoji:'🌾',th:'ให้อาหารเสริม',en:'Extra feed / snacks'},
+  {time:'17:00',emoji:'🪺',th:'เก็บไข่รอบสอง',en:'Second egg collection'},
+  {time:'18:30',emoji:'🌙',th:'ปิดโรงเรือน ให้ปลอดภัย',en:'Close coop for the night'}
+];
+const routineWrap = document.getElementById('routineWrap');
+routine.forEach(r=>{
+  const step = document.createElement('div');
+  step.className='routine-step';
+  step.innerHTML = `<div class="time">${r.time}</div><div class="emoji">${r.emoji}</div><h5><span class="th">${r.th}</span><span class="en">${r.en}</span></h5>`;
+  routineWrap.appendChild(step);
+});
+</script>
+</body>
+</html>
