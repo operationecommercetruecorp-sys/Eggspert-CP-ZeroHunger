@@ -58,7 +58,7 @@ try {
 // Remove Name", trimmed layout) as of this build. If columns are added/removed/
 // reordered in the sheet, update this list to match so the downloadable
 // template stays a reliable manual-upload starting point.
-const TEMPLATE_HEADERS = ["No.","Order Create Date","Order ID","Order operator","Order Type","Order Status","Payment Status","Order Workflow Status","Order Cancelled reason","Order Fulfillment Success/Failed reason","Product Type","Product Cat","Product Sub Cat","Brand Name","Product Name","Product Full Name","quantity","Current Package RC","New Package RC","New Proposition Name","Payment Date","Total Payment","Delivery Type","Delivery Shop Name","Delivery Shop Code","Shipping Status","Shipping Address Province","Dispatch Complete Date","Day to dispatch","Total day to customer"];
+const TEMPLATE_HEADERS = ["No.","Order Create Date","Order ID","Order operator","Order Type","Order Status","Payment Status","Order Workflow Status","Order Cancelled reason","Order Fulfillment Success/Failed reason","Product Type","Product Cat","Product Sub Cat","Brand Name","Matcode","Product Name","Product Full Name","quantity","Current Package RC","New Package RC","New Proposition Name","Payment Date","Total Payment","Delivery Type","Delivery Shop Name","Delivery Shop Code","Shipping Status","Shipping Address Province","Dispatch Complete Date","Day to dispatch","Total day to customer"];
 
 /* ============================ Data cleaning (ported from prep) ============================
    Maps a raw row (object keyed by the report's CSV/XLSX headers) into the compact
@@ -346,7 +346,8 @@ function cleanRows(rawRows) {
       p: toNum(pick(r, "Total Payment")),
       pn: String(pick(r, "Product Name") ?? ""),
       pfn: String(pick(r, "Product Full Name") ?? ""),
-      mc: String(pick(r, "Material Code") ?? ""),
+      // The live sheet names this column "Matcode"; older exports used "Material Code". Accept either.
+      mc: String(pick(r, "Matcode") ?? pick(r, "Material Code") ?? ""),
       pc: String(pick(r, "Product Cat") ?? "").trim(),
       psc: String(pick(r, "Product Sub Cat") ?? "").trim(),
       shop: String(pick(r, "Delivery Shop Name") ?? ""),
@@ -1751,7 +1752,7 @@ function Dashboard() {
 
   // Apps Script Web App — reads the sheet's cells directly (no file-size limit) and returns CSV.
   // Sheet can stay restricted; this proxy runs as the deploying account.
-  const SHEET_CSV_URL = `https://script.google.com/macros/s/AKfycbwvGxqcYyi6pWlt6-KjHVu445vCOhmpK0lQDNt-WduBjjIXmFTH61TZU84YHmOBw1K8/exec?_=${Date.now()}`;
+  const SHEET_CSV_URL = `https://script.google.com/macros/s/AKfycbxf9tbFRO6xjO9WOhTKlDDn5mFm2rUEd2s4Hzt7mr3EEalAdb2NQed5dyNQVvAal957/exec?_=${Date.now()}`;
 
   // Auto-load latest data from the Google Sheet when the dashboard opens
   React.useEffect(() => {
